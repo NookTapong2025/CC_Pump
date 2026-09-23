@@ -21,8 +21,14 @@
             <div id="status-text" class="text-2xl font-bold tracking-wide">กำลังโหลดข้อมูล...</div>
         </div>
 
-        <div class="text-xs text-slate-400">
-            อัปเดตล่าสุด: <span id="last-update">-</span>
+        <div class="text-xs text-slate-400 mb-2">
+            อัปเดตสถานะล่าสุด: <span id="last-update" class="text-slate-300">-</span>
+        </div>
+        
+        <!-- เพิ่มส่วนแสดงเวลาทำงานล่าสุด -->
+        <div class="text-sm text-emerald-400 bg-slate-900/50 py-2 px-3 rounded-lg border border-slate-700/50 inline-block w-full">
+            เวลาที่ปั๊มทำงานล่าสุด:<br>
+            <span id="last-active" class="font-semibold text-emerald-300">-</span>
         </div>
     </div>
 
@@ -44,11 +50,15 @@
         firebase.initializeApp(firebaseConfig);
         const dbRef = firebase.database().ref('pump/status');
         const timeRef = firebase.database().ref('pump/last_updated');
+        
+        // อ้างอิงไปยัง node ใหม่ใน Firebase ที่เก็บเวลาทำงานล่าสุด
+        const activeTimeRef = firebase.database().ref('pump/last_active'); 
 
         const card = document.getElementById('status-card');
         const icon = document.getElementById('status-icon');
         const text = document.getElementById('status-text');
         const timeSpan = document.getElementById('last-update');
+        const activeTimeSpan = document.getElementById('last-active');
 
         dbRef.on('value', (snapshot) => {
             const status = snapshot.val();
@@ -65,6 +75,11 @@
 
         timeRef.on('value', (snapshot) => {
             timeSpan.innerHTML = snapshot.val() || "-";
+        });
+
+        // ดึงข้อมูลเวลาทำงานล่าสุดมาแสดงผล
+        activeTimeRef.on('value', (snapshot) => {
+            activeTimeSpan.innerHTML = snapshot.val() || "ยังไม่มีบันทึก";
         });
     </script>
 </body>

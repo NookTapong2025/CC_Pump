@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Pump Monitoring - ชั้น 5</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Prompt', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-900 text-white flex items-center justify-center h-screen m-0">
+
+    <div class="bg-slate-800 p-8 rounded-2xl shadow-2xl w-96 text-center border border-slate-700">
+        <h1 class="text-xl font-semibold mb-2 text-slate-300">สถานะปั๊มน้ำ (ชั้น 5)</h1>
+        <p class="text-xs text-slate-400 mb-6">ระบบตรวจสอบอัตโนมัติผ่านเครือข่าย</p>
+
+        <div id="status-card" class="py-6 px-4 rounded-xl mb-6 transition-all duration-300 bg-slate-700">
+            <div id="status-icon" class="text-5xl mb-2">⚪</div>
+            <div id="status-text" class="text-2xl font-bold tracking-wide">กำลังโหลดข้อมูล...</div>
+        </div>
+
+        <div class="text-xs text-slate-400">
+            อัปเดตล่าสุด: <span id="last-update">-</span>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDvq7gp9GpQoAwqAR4za3gik0HegDGbg0U",
+            authDomain: "water-pump-monitor-e1d75.firebaseapp.com",
+            databaseURL: "https://water-pump-monitor-e1d75-default-rtdb.firebaseio.com",
+            projectId: "water-pump-monitor-e1d75",
+            storageBucket: "water-pump-monitor-e1d75.firebasestorage.app",
+            messagingSenderId: "906859161028",
+            appId: "1:906859161028:web:dbcd6cd43681255eb3b091",
+            measurementId: "G-R4MP7282BT"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const dbRef = firebase.database().ref('pump/status');
+        const timeRef = firebase.database().ref('pump/last_updated');
+
+        const card = document.getElementById('status-card');
+        const icon = document.getElementById('status-icon');
+        const text = document.getElementById('status-text');
+        const timeSpan = document.getElementById('last-update');
+
+        dbRef.on('value', (snapshot) => {
+            const status = snapshot.val();
+            if (status === "ON" || status === true) {
+                card.className = "py-6 px-4 rounded-xl mb-6 transition-all duration-300 bg-emerald-600 shadow-lg shadow-emerald-900/50";
+                icon.innerHTML = "🟢";
+                text.innerHTML = "ปั๊มน้ำกำลังทำงาน (ON)";
+            } else {
+                card.className = "py-6 px-4 rounded-xl mb-6 transition-all duration-300 bg-rose-600 shadow-lg shadow-rose-900/50";
+                icon.innerHTML = "🔴";
+                text.innerHTML = "ปั๊มหยุดทำงาน (OFF)";
+            }
+        });
+
+        timeRef.on('value', (snapshot) => {
+            timeSpan.innerHTML = snapshot.val() || "-";
+        });
+    </script>
+</body>
+</html>
